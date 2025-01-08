@@ -92,3 +92,7 @@ Common issues:
 
 2. If you get module import errors:
    - Make sure you've installed all required packages using pip
+
+## Example usage
+
+![Demo](https://github.com/boomyville/pill-inspector/blob/main/detected_objects.jpg?raw=true)
