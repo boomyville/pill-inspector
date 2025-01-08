@@ -1,12 +1,13 @@
 # Pill Inspector
 Uses computer vision to analyse images of pills
 
+![Demo](https://github.com/boomyville/pill-inspector/blob/main/demo/test.png?raw=true)
+
 This Python script uses YOLOv8 and OpenCV to detect and count objects in images. 
 
 ## Training the model
 
-https://github.com/boomyville/pill-inspector/raw/refs/heads/main/demo/training_model.mp4
-
+https://github.com/user-attachments/assets/c22e8bd9-7867-4157-8bfb-420e0bc4b2e6
 
 Place training images in data/images/train/
 
@@ -87,4 +88,4 @@ Navigate to http://127.0.0.1:5000/ if running on local machine
 
 ## Example usage
 
-![Demo](https://github.com/boomyville/pill-inspector/blob/main/demo/test.png?raw=true)
+https://github.com/user-attachments/assets/9cc0e65b-e74e-48a7-a3c6-ee7aed79064a
