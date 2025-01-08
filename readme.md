@@ -5,6 +5,8 @@ Uses computer vision to analyse images of pills
 
 This Python script uses YOLOv8 and OpenCV to detect and count objects in images. 
 
+Mainly used by nurses and pharmacists to automatically count how many count pills with their camera on their smartphone
+
 ## Training the model
 
 https://github.com/user-attachments/assets/c22e8bd9-7867-4157-8bfb-420e0bc4b2e6
