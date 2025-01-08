@@ -22,23 +22,17 @@ Ideally have a 4:1 ratio (4 times more images in training than validation)
 I used Label Studio running on Docker to perform image tagging
 
 ### Create a data.yaml file:
-
+```
 path: path/to/pill-inspector/data  # replace with absolute path
-
 train: images/train
-
 val: images/val
-
 nc: 1  # number of classes
-
 names: ['pill']  # class names
-
+```
 ### Create a train.py file and then run it:
-
+```
 from ultralytics import YOLO
-
 model = YOLO('yolov8n.pt')
-
 results = model.train(
     data='data.yaml',
     epochs=100,
@@ -46,9 +40,9 @@ results = model.train(
     batch=8,
     name='pill_inspector'
 )
-
+```
 ### Run the model
-python train.py
+python3 train.py
 This will create a model that we can use
 model = YOLO('runs/detect/pill_inspector/weights/best.pt')
 
