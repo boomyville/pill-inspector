@@ -1,9 +1,16 @@
 # Pill Inspector
 Uses computer vision to analyse images of pills
 
+![Demo](https://github.com/boomyville/pill-inspector/blob/main/demo/test.png?raw=true)
+
 This Python script uses YOLOv8 and OpenCV to detect and count objects in images. 
 
+Mainly used by nurses and pharmacists to automatically count how many count pills with their camera on their smartphone
+
 ## Training the model
+
+https://github.com/user-attachments/assets/c22e8bd9-7867-4157-8bfb-420e0bc4b2e6
+
 Place training images in data/images/train/
 
 Place training labels (text files) in data/labels/train/
@@ -17,23 +24,17 @@ Ideally have a 4:1 ratio (4 times more images in training than validation)
 I used Label Studio running on Docker to perform image tagging
 
 ### Create a data.yaml file:
-
+```
 path: path/to/pill-inspector/data  # replace with absolute path
-
 train: images/train
-
 val: images/val
-
 nc: 1  # number of classes
-
 names: ['pill']  # class names
-
+```
 ### Create a train.py file and then run it:
-
+```
 from ultralytics import YOLO
-
 model = YOLO('yolov8n.pt')
-
 results = model.train(
     data='data.yaml',
     epochs=100,
@@ -41,9 +42,9 @@ results = model.train(
     batch=8,
     name='pill_inspector'
 )
-
+```
 ### Run the model
-python train.py
+python3 train.py
 This will create a model that we can use
 model = YOLO('runs/detect/pill_inspector/weights/best.pt')
 
@@ -83,4 +84,4 @@ Navigate to http://127.0.0.1:5000/ if running on local machine
 
 ## Example usage
 
-![Demo](https://github.com/boomyville/pill-inspector/blob/main/detected_objects.jpg?raw=true)
+https://github.com/user-attachments/assets/9cc0e65b-e74e-48a7-a3c6-ee7aed79064a

@@ -1,6 +1,6 @@
-path: /mnt/c/Users/kevin/OneDrive/Backup/University/AI Competition/pill-inspector/datasets/  # replace with absolute path
-train: /mnt/c/Users/kevin/OneDrive/Backup/University/AI Competition/pill-inspector/datasets/images/train
-val: /mnt/c/Users/kevin/OneDrive/Backup/University/AI Competition/pill-inspector/datasets/images/val
+path: /path/to/pill-inspector/datasets/  # replace with absolute path
+train: /path/to/pill-inspector/datasets/images/train
+val: /path/to/pill-inspector/datasets/images/val
 
 nc: 1  # number of classes
 names: ['pill']  # class names
