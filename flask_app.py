@@ -64,6 +64,7 @@ def get_available_models():
 
 def get_model(model_filename):
     """Get or load the requested model"""
+    
     if model_filename not in loaded_models:
         model_path = os.path.join(app.config['MODELS_FOLDER'], model_filename)
         if not os.path.exists(model_path):
@@ -117,7 +118,7 @@ def detect():
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': "Uh oh..." + str(e)}), 500
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -132,4 +133,4 @@ def manual_cleanup():
 if __name__ == '__main__':
     # Initial cleanup when starting the server
     cleanup_old_files()
-    app.run(debug=True)
+    app.run(debug=False)

@@ -37,6 +37,8 @@ class ObjectDetectionLayout(BoxLayout):
         self.loaded_models = {}
         self.capture = None
         self.webcam_active = False
+        self.showing_detection = False
+        self.webcam_update_event = None
         
         # Create UI elements
         self.setup_ui()
@@ -132,17 +134,28 @@ class ObjectDetectionLayout(BoxLayout):
                 self.webcam_active = True
                 self.webcam_button.text = 'Stop Webcam'
                 self.capture_button.disabled = False
-                Clock.schedule_interval(self.update_webcam, 1.0 / 30.0)  # 30 FPS
+                self.start_webcam_updates()
                 self.result_label.text = 'Webcam active'
             else:
                 self.result_label.text = 'Error: Could not open webcam'
         else:
             # Stop webcam
             self.stop_webcam()
+
+    def start_webcam_updates(self):
+        """Start webcam update schedule"""
+        if self.webcam_update_event is None:
+            self.webcam_update_event = Clock.schedule_interval(self.update_webcam, 1.0 / 30.0)  # 30 FPS
+    
+    def stop_webcam_updates(self):
+        """Stop webcam update schedule"""
+        if self.webcam_update_event is not None:
+            self.webcam_update_event.cancel()
+            self.webcam_update_event = None
     
     def stop_webcam(self):
         """Stop the webcam and clean up"""
-        Clock.unschedule(self.update_webcam)
+        self.stop_webcam_updates()
         if self.capture:
             self.capture.release()
         self.webcam_active = False
@@ -153,7 +166,7 @@ class ObjectDetectionLayout(BoxLayout):
     
     def update_webcam(self, dt):
         """Update webcam feed"""
-        if self.capture and self.webcam_active:
+        if self.capture and self.webcam_active and not self.showing_detection:
             ret, frame = self.capture.read()
             if ret:
                 # Flip the frame horizontally for a mirror effect
@@ -183,7 +196,21 @@ class ObjectDetectionLayout(BoxLayout):
                 cv2.imwrite(temp_path, frame)
                 
                 # Process the captured frame
-                self.process_image(temp_path)
+                self.process_image(temp_path, from_webcam=True)
+
+    def show_detection_temporarily(self, image_path):
+        """Show detection result temporarily before returning to webcam feed"""
+        self.showing_detection = True
+        self.image_display.source = image_path
+        self.image_display.reload()
+        
+        # Schedule return to webcam feed after 3 seconds
+        Clock.schedule_once(self.return_to_webcam, 3)
+    
+    def return_to_webcam(self, dt):
+        """Return to webcam feed after showing detection"""
+        self.showing_detection = False
+        self.image_display.texture = None  # Clear the current image
     
     def choose_image(self, instance):
         """Open file dialog to choose an image"""
@@ -196,9 +223,9 @@ class ObjectDetectionLayout(BoxLayout):
         )
         
         if filepath:
-            self.process_image(filepath)
+            self.process_image(filepath, from_webcam=False)
     
-    def process_image(self, image_path):
+    def process_image(self, image_path, from_webcam=False):
         """Process image with selected model"""
         try:
             # Update label to show processing
@@ -208,12 +235,12 @@ class ObjectDetectionLayout(BoxLayout):
             model = self.get_model(self.model_spinner.text)
             
             # Run detection in a separate thread
-            threading.Thread(target=self._run_detection, args=(model, image_path)).start()
+            threading.Thread(target=self._run_detection, args=(model, image_path, from_webcam)).start()
             
         except Exception as e:
             self.result_label.text = f'Error: {str(e)}'
     
-    def _run_detection(self, model, image_path):
+    def _run_detection(self, model, image_path, from_webcam):
         """Run detection in background thread"""
         try:
             # Run detection
@@ -228,13 +255,24 @@ class ObjectDetectionLayout(BoxLayout):
             cv2.imwrite(output_path, results.plot())
             
             # Update UI in main thread
-            Clock.schedule_once(lambda dt: self.update_results(output_path, detections))
+            if from_webcam:
+                Clock.schedule_once(lambda dt: self.update_results_webcam(output_path, detections))
+            else:
+                Clock.schedule_once(lambda dt: self.update_results(output_path, detections))
             
         except Exception as e:
             Clock.schedule_once(lambda dt: setattr(self.result_label, 'text', f'Error: {str(e)}'))
     
+    def update_results_webcam(self, image_path, detection_count):
+        """Update results for webcam capture"""
+        # Update detection count
+        self.result_label.text = f'Found {detection_count} objects'
+        
+        # Show detection temporarily
+        self.show_detection_temporarily(image_path)
+    
     def update_results(self, image_path, detection_count):
-        """Update UI with detection results"""
+        """Update results for regular image processing"""
         # Update image display
         self.image_display.source = image_path
         self.image_display.reload()
