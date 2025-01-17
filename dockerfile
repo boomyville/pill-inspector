@@ -6,14 +6,14 @@ WORKDIR /app
 
 # Install necessary system dependencies for OpenCV
 RUN apt-get update && apt-get install -y \
-    libglib2.0-0 \
-    libsm6 \
-    libxrender1 \
-    libxext6 \
-    && rm -rf /var/lib/apt/lists/*
+  libglib2.0-0 \
+  libsm6 \
+  libxrender1 \
+  libxext6 \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy the application files into the container
-COPY app.py /app/app.py
+COPY flask_app.py /app/flask_app.py  # Update the filename here
 COPY requirements.txt /app/requirements.txt
 
 # Copy the templates and static files
@@ -28,4 +28,4 @@ RUN pip3 install --upgrade pip && pip install --no-cache-dir -r /app/requirement
 EXPOSE 5000
 
 # Define the command to run the Flask application
-CMD ["python", "app.py"]
+CMD ["python", "flask_app.py"]  # Update the filename here
