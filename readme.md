@@ -154,7 +154,8 @@ Otherwise the flask app will only work locally
 ## Important Notes
 
 - The script uses YOLOv8n (nano) model which will be downloaded automatically on first run
-- Default confidence threshold is set to 0.3
+- Default confidence threshold is set to 0.5
+- Most actual pills will have a CI of 0.75 or greater
 
 ## Troubleshooting
 
