@@ -35,4 +35,7 @@ EXPOSE 5003
 
 # Define the command to run the Flask application using Gunicorn
 # We have to use gunicorn to get https to work as well as to get the camera to work (camera access needs https)
-CMD ["gunicorn", "-b", "0.0.0.0:5003", "app:app"]
+# Can also add threads if you want to use more than one thread
+# Long time out for slow CPUs
+# CMD ["gunicorn", "-b", "0.0.0.0:5003", "--threads", "4", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:5003", "--timeout", "120", "app:app"]

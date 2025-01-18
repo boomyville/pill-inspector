@@ -149,6 +149,8 @@ server {
 
 We need SSL to work with our flask app to have camera access
 
+Also add port 5003 to your port forwarding / ingress network rules 
+
 Otherwise the flask app will only work locally 
 
 ## Important Notes
