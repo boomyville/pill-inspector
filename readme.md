@@ -65,6 +65,14 @@ pip install ultralytics opencv-python numpy
 ```
 
 ## Usage
+Run kivy script (Windows/Linux/macOS):
+
+Run the flask script:
+```bash
+python3 kivy_app.py
+```
+
+
 Run the flask script:
 ```bash
 python3 app.py
