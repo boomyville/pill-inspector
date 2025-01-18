@@ -46,7 +46,7 @@ cameraButton.addEventListener('click', async () => {
 
         // Fix the flipped camera issue for the rear camera
         if (currentFacingMode === 'environment') {
-            videoElement.style.transform = 'scaleX(-1)'; 
+            videoElement.style.transform = 'scaleX(1)'; 
         } else {
             videoElement.style.transform = '';  // Reset to normal for the front camera
         }
