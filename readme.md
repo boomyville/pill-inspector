@@ -7,7 +7,7 @@ This Python script uses YOLOv8 and OpenCV to detect and count objects in images.
 
 Mainly used by nurses and pharmacists to automatically count how many count pills with their camera on their smartphone
 
-## Training the model
+## Training the model (optional)
 
 https://github.com/user-attachments/assets/c22e8bd9-7867-4157-8bfb-420e0bc4b2e6
 
@@ -23,7 +23,8 @@ Ideally have a 4:1 ratio (4 times more images in training than validation)
 
 I used Label Studio running on Docker to perform image tagging
 
-### Create a data.yaml file:
+### Create a data.yaml file (optional)
+
 ```
 path: path/to/pill-inspector/data  # replace with absolute path
 train: images/train
@@ -80,13 +81,17 @@ python3 app.py
 Navigate to http://127.0.0.1:5003/ if running on local machine
 
 ## Building the docker file
-```git clone https://github.com/boomyville/pill-inspector```
+```bash
+git clone https://github.com/boomyville/pill-inspector
+```
 
 This will create a pill-inspector folder with this git repository contents
 
 Change diretory into this folder and run in docker (needs sudo privileges):
 
-```sudo docker build -t pill-inspector:latest . ```
+```bash
+sudo docker build -t pill-inspector:latest . 
+```
 
 This will create an image that we can then use.
 
