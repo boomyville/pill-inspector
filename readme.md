@@ -88,19 +88,60 @@ incorporate it with NGINX to have it running over HTTPS (needed for camera acces
 
 To run it with NGINX, add the following to your nginx docker-compose script:
 
+Add to nginx yaml:
+```
+    networks:
+      - app_network
+```
+
+Add to the end of the nginx yaml:
 ```
   flask_app:
-    image: pill-inspector
-    container_name: flask_app
+    image: pill-inspector:latest
+    container_name: flask-app
     environment:
-      - FLASK_ENV=production # optional
-    volumes:
-      - /path/to/your/flask/app:/app
+      - FLASK_ENV=production
     ports:
-      - 5003:5003
+      - "5003:5003"
+    networks:
+      - app_network
+    depends_on:
+      - swag
     restart: unless-stopped
-    command: flask run --host=0.0.0.0 --port=5003
+
+networks:
+  app_network:
+    driver: bridge
 ```
+
+Redeploy your nginx instance and it will use the pill-inspector image we created earlier and rebuild it to work with nginx
+
+You will also need to edit your nginx configuration to have:
+
+```
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name pill-inspector.yourdomain.com;
+
+    include /config/nginx/ssl.conf;
+
+    client_max_body_size 0;
+
+    location / {
+        include /config/nginx/proxy.conf;
+        set $upstream_app flask-app;
+        set $upstream_port 5003;
+        set $upstream_proto http;
+        proxy_pass $upstream_proto://$upstream_app:$upstream_port;
+    }
+}
+```
+
+We need SSL to work with our flask app to have camera access
+
+Otherwise the flask app will only work locally 
 
 ## Important Notes
 
