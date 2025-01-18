@@ -9,9 +9,7 @@ Mainly used by nurses and pharmacists to automatically count how many count pill
 
 https://github.com/user-attachments/assets/b7bb9bf3-155a-4227-90d1-eec455649747
 
-<span style="font-size: 2em;">[Test it out!](https://pill-inspector.boomyville.duckdns.org)</span> 
-
-[]()
+## [Test it out!](https://pill-inspector.boomyville.duckdns.org)
 
 ## Training the model (optional)
 
