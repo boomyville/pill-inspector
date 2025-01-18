@@ -1,10 +1,14 @@
 # Use the official Python 3.8 slim image as the base image
 FROM python:3.8-slim
 
+# Set environment variables (disables warning about development server by Flask)
+ENV FLASK_ENV=production
+
 # Set the working directory within the container
 WORKDIR /app
 
 # Install necessary system dependencies for OpenCV
+# We need mesa-dev for camera stuff
 RUN apt-get update && apt-get install -y \
   libglib2.0-0 \
   libsm6 \
@@ -26,7 +30,9 @@ COPY models/ /app/models/
 RUN pip3 install --upgrade pip && pip install --no-cache-dir -r /app/requirements.txt
 
 # Expose port 5003 for the Flask application
+# Usually we use 5000 but port 5000 is used by heaps of other things
 EXPOSE 5003
 
 # Define the command to run the Flask application using Gunicorn
+# We have to use gunicorn to get https to work as well as to get the camera to work (camera access needs https)
 CMD ["gunicorn", "-b", "0.0.0.0:5003", "app:app"]
