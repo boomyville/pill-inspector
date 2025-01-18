@@ -16,6 +16,7 @@ const canvas = document.getElementById('canvas');
 const errorMessage = document.getElementById('errorMessage');
 
 let stream = null;
+let currentFacingMode = 'environment';  // Start with the rear camera
 
 // =============================================
 // Event listeners for the various buttons
@@ -26,15 +27,16 @@ uploadButton.addEventListener('click', () => {
     stopCamera();
 });
 
+
 cameraButton.addEventListener('click', async () => {
     dropZone.style.display = 'none';
     cameraContainer.style.display = 'block';
     errorMessage.textContent = '';
-    
+
     try {
         stream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
-                facingMode: 'user',
+                facingMode: currentFacingMode,  // Use the current facing mode (environment or user)
                 width: { ideal: 1280 },
                 height: { ideal: 720 }
             } 
@@ -45,6 +47,16 @@ cameraButton.addEventListener('click', async () => {
         console.error('Camera error:', err);
     }
 });
+
+// Add a button to switch between front and rear camera
+const switchCameraButton = document.getElementById('switchCameraButton');
+switchCameraButton.addEventListener('click', () => {
+    // Toggle between 'user' and 'environment'
+    currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+    stopCamera();  // Stop the current stream before switching
+    cameraButton.click();  // Restart the camera with the new facing mode
+});
+
 
 function stopCamera() {
     if (stream) {

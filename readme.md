@@ -69,8 +69,38 @@ Run the flask script:
 ```bash
 python3 app.py
 ```
+Navigate to http://127.0.0.1:5003/ if running on local machine
 
-Navigate to http://127.0.0.1:5000/ if running on local machine
+## Building the docker file
+```git clone https://github.com/boomyville/pill-inspector```
+
+This will create a pill-inspector folder with this git repository contents
+
+Change diretory into this folder and run in docker (needs sudo privileges):
+
+```sudo docker build -t pill-inspector:latest . ```
+
+This will create an image that we can then use.
+
+We can then use docker-compose to run a container based on the image or we can
+
+incorporate it with NGINX to have it running over HTTPS (needed for camera access)
+
+To run it with NGINX, add the following to your nginx docker-compose script:
+
+```
+  flask_app:
+    image: pill-inspector
+    container_name: flask_app
+    environment:
+      - FLASK_ENV=production # optional
+    volumes:
+      - /path/to/your/flask/app:/app
+    ports:
+      - 5003:5003
+    restart: unless-stopped
+    command: flask run --host=0.0.0.0 --port=5003
+```
 
 ## Important Notes
 
