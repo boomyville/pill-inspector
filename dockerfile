@@ -10,11 +10,11 @@ RUN apt-get update && apt-get install -y \
   libsm6 \
   libxrender1 \
   libxext6 \
-  libgl1-mesa-dev \  # Add libgl1-mesa-dev for OpenGL development libraries
+  libgl1-mesa-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy the application files into the container
-COPY flask_app.py /app/flask_app.py  # Update the filename here
+COPY flask_app.py /app/flask_app.py
 COPY requirements.txt /app/requirements.txt
 
 # Copy the templates and static files
@@ -29,4 +29,4 @@ RUN pip3 install --upgrade pip && pip install --no-cache-dir -r /app/requirement
 EXPOSE 5000
 
 # Define the command to run the Flask application
-CMD ["python", "flask_app.py"]  # Update the filename here
+CMD ["python", "flask_app.py"]
