@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 
 # Copy the application files into the container
-COPY flask_app.py /app/flask_app.py
+COPY app.py /app/app.py
 COPY requirements.txt /app/requirements.txt
 
 # Copy the templates and static files
@@ -25,8 +25,8 @@ COPY models/ /app/models/
 # Install Python dependencies
 RUN pip3 install --upgrade pip && pip install --no-cache-dir -r /app/requirements.txt
 
-# Expose port 5000 for the Flask application
-EXPOSE 5000
+# Expose port 5003 for the Flask application
+EXPOSE 5003
 
 # Define the command to run the Flask application
-CMD ["python", "flask_app.py"]
+CMD ["python", "app.py"]
