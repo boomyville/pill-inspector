@@ -89,8 +89,9 @@ def detect():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
     
-    # Get selected model from form data
+    # Get selected model and confidence level from form data
     model_filename = request.form.get('model', 'yolov8n.pt')
+    confidence_level = float(request.form.get('confidence', 0.7))  # Default to 0.7 if not specified
     
     try:
         # Load the appropriate model
@@ -103,7 +104,7 @@ def detect():
         file.save(filepath)
         
         # Run detection
-        results = model(filepath)[0]
+        results = model(filepath, conf=confidence_level)[0]  # Use the specified confidence level
         
         # Count detections
         detections = len(results.boxes.data)
@@ -119,6 +120,7 @@ def detect():
         
     except Exception as e:
         return jsonify({'error': "Uh oh..." + str(e)}), 500
+
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

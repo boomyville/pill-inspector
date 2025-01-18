@@ -14,6 +14,7 @@ const captureButton = document.getElementById('captureButton');
 const videoElement = document.getElementById('camera-feed');
 const canvas = document.getElementById('canvas');
 const errorMessage = document.getElementById('errorMessage');
+const confidenceSelect = document.getElementById('confidenceSelect'); // Confidence dropdown element
 
 let stream = null;
 let currentFacingMode = 'environment';  // Start with the rear camera
@@ -21,12 +22,12 @@ let currentFacingMode = 'environment';  // Start with the rear camera
 // =============================================
 // Event listeners for the various buttons
 // =============================================
+
 uploadButton.addEventListener('click', () => {
     dropZone.style.display = 'block';
     cameraContainer.style.display = 'none';
     stopCamera();
 });
-
 
 cameraButton.addEventListener('click', async () => {
     dropZone.style.display = 'none';
@@ -42,6 +43,13 @@ cameraButton.addEventListener('click', async () => {
             } 
         });
         videoElement.srcObject = stream;
+
+        // Fix the flipped camera issue for the rear camera
+        if (currentFacingMode === 'environment') {
+            videoElement.style.transform = 'rotate(180deg)';  // Flip the rear camera view
+        } else {
+            videoElement.style.transform = '';  // Reset to normal for the front camera
+        }
     } catch (err) {
         errorMessage.textContent = `Camera error: ${err.message}`;
         console.error('Camera error:', err);
@@ -57,7 +65,6 @@ switchCameraButton.addEventListener('click', () => {
     cameraButton.click();  // Restart the camera with the new facing mode
 });
 
-
 function stopCamera() {
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -68,7 +75,6 @@ function stopCamera() {
 
 // =============================================
 // Handle drag and drop of files
-// This is used for the upload rectangle thingy
 // =============================================
 
 dropZone.addEventListener('dragover', (e) => {
@@ -88,7 +94,6 @@ dropZone.addEventListener('drop', (e) => {
 
 // =============================================
 // Handle upload file dialog
-// This is used for the upload rectangle thingy
 // =============================================
 
 dropZone.addEventListener('click', () => fileInput.click());
@@ -105,8 +110,13 @@ function handleFile(file) {
     preview.style.display = 'none';
     errorMessage.textContent = '';
     
+    // Get the selected confidence level from the dropdown
+    const confidenceLevel = confidenceSelect.value;
+    
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('model', document.getElementById('modelSelect').value);
+    formData.append('confidence', confidenceLevel);  // Add confidence level to form data
     
     fetch('/detect', {
         method: 'POST',
@@ -134,6 +144,7 @@ function handleFile(file) {
 // =============================================
 // Handle image capture via device camera
 // =============================================
+
 captureButton.addEventListener('click', () => {
     if (!stream) {
         errorMessage.textContent = 'Camera not available';
@@ -152,8 +163,13 @@ captureButton.addEventListener('click', () => {
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
     
     canvas.toBlob((blob) => {
+        // Get the selected confidence level from the dropdown
+        const confidenceLevel = confidenceSelect.value;
+        
         const formData = new FormData();
         formData.append('file', blob, 'capture.jpg');
+        formData.append('model', document.getElementById('modelSelect').value);
+        formData.append('confidence', confidenceLevel);  // Add confidence level to form data
         
         fetch('/detect', {
             method: 'POST',
@@ -178,94 +194,9 @@ captureButton.addEventListener('click', () => {
         });
     }, 'image/jpeg', 0.95);
 });
-
 
 // =============================================
 // Page cleanup on unload
 // =============================================
+
 window.addEventListener('beforeunload', stopCamera);
-
-function handleFile(file) {
-    if (!file) return;
-    
-    loading.style.display = 'block';
-    result.textContent = '';
-    preview.style.display = 'none';
-    errorMessage.textContent = '';
-    
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('model', document.getElementById('modelSelect').value);
-    
-    fetch('/detect', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        loading.style.display = 'none';
-        
-        if (data.error) {
-            errorMessage.textContent = `Error: ${data.error}`;
-            return;
-        }
-        
-        result.textContent = `Detected ${data.count} objects`;
-        preview.src = `/uploads/${data.image}`;
-        preview.style.display = 'block';
-    })
-    .catch(error => {
-        loading.style.display = 'none';
-        errorMessage.textContent = `Error: ${error.message}`;
-    });
-}
-
-
-// =============================================
-// Use captured image from camera for detection 
-// =============================================
-captureButton.addEventListener('click', () => {
-    if (!stream) {
-        errorMessage.textContent = 'Camera not available';
-        return;
-    }
-
-    loading.style.display = 'block';
-    result.textContent = '';
-    preview.style.display = 'none';
-    errorMessage.textContent = '';
-    
-    canvas.width = videoElement.videoWidth;
-    canvas.height = videoElement.videoHeight;
-    
-    const context = canvas.getContext('2d');
-    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-    
-    canvas.toBlob((blob) => {
-        const formData = new FormData();
-        formData.append('file', blob, 'capture.jpg');
-        formData.append('model', document.getElementById('modelSelect').value);
-        
-        fetch('/detect', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            loading.style.display = 'none';
-            
-            if (data.error) {
-                errorMessage.textContent = `Error: ${data.error}`;
-                return;
-            }
-            
-            result.textContent = `Detected ${data.count} objects`;
-            preview.src = `/uploads/${data.image}`;
-            preview.style.display = 'block';
-        })
-        .catch(error => {
-            loading.style.display = 'none';
-            errorMessage.textContent = `Error: ${error.message}`;
-        });
-    }, 'image/jpeg', 0.95);
-});
