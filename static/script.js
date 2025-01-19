@@ -144,7 +144,7 @@ function handleFile(file) {
 // =============================================
 // Handle image capture via device camera
 // =============================================
-
+// Find the part where we handle the capture button click and modify it
 captureButton.addEventListener('click', () => {
     if (!stream) {
         errorMessage.textContent = 'Camera not available';
@@ -163,13 +163,12 @@ captureButton.addEventListener('click', () => {
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
     
     canvas.toBlob((blob) => {
-        // Get the selected confidence level from the dropdown
         const confidenceLevel = confidenceSelect.value;
         
         const formData = new FormData();
         formData.append('file', blob, 'capture.jpg');
         formData.append('model', document.getElementById('modelSelect').value);
-        formData.append('confidence', confidenceLevel);  // Add confidence level to form data
+        formData.append('confidence', confidenceLevel);
         
         fetch('/detect', {
             method: 'POST',
@@ -185,8 +184,27 @@ captureButton.addEventListener('click', () => {
             }
             
             result.textContent = `Detected ${data.count} objects`;
+            
+            // Create a temporary preview for the viewfinder area
+            const tempPreview = document.createElement('img');
+            tempPreview.style.width = '100%';
+            tempPreview.style.height = 'auto';
+            tempPreview.style.objectFit = 'contain';
+            tempPreview.src = `/uploads/${data.image}`;  // Use the processed image
+            
+            // Hide video and show processed image
+            videoElement.style.display = 'none';
+            videoElement.parentNode.insertBefore(tempPreview, videoElement.nextSibling);
+            
+            // Show the same processed image in the preview area below
             preview.src = `/uploads/${data.image}`;
             preview.style.display = 'block';
+            
+            // Set a timeout to remove the temporary preview and show the video feed again
+            setTimeout(() => {
+                tempPreview.remove();
+                videoElement.style.display = 'block';
+            }, 5000);
         })
         .catch(error => {
             loading.style.display = 'none';
@@ -194,6 +212,24 @@ captureButton.addEventListener('click', () => {
         });
     }, 'image/jpeg', 0.95);
 });
+
+// Add styles to ensure the camera container maintains consistent dimensions
+const style = document.createElement('style');
+style.textContent = `
+    .camera-container {
+        position: relative;
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+    
+    #camera-feed {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+`;
+document.head.appendChild(style);
 
 // =============================================
 // Page cleanup on unload
