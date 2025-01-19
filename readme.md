@@ -1,6 +1,8 @@
 # Pill Inspector
 Uses computer vision to analyse images of pills
 
+## [Test it out!](https://pill-inspector.boomyville.duckdns.org)
+
 ![Demo](https://github.com/boomyville/pill-inspector/blob/main/demo/test.png?raw=true)
 
 This Python script uses YOLOv8 and OpenCV to detect and count objects in images. 
@@ -8,8 +10,6 @@ This Python script uses YOLOv8 and OpenCV to detect and count objects in images.
 Mainly used by nurses and pharmacists to automatically count how many count pills with their camera on their smartphone
 
 https://github.com/user-attachments/assets/b7bb9bf3-155a-4227-90d1-eec455649747
-
-## [Test it out!](https://pill-inspector.boomyville.duckdns.org)
 
 ## Training the model (optional)
 
